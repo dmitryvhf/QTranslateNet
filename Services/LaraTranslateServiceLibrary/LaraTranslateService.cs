@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 
+using Microsoft.Net.Http.Headers;
+
 using QTranslateNet.Core;
 using QTranslateNet.Core.Helpers;
 using QTranslateNet.Core.Infrastructure;
@@ -57,9 +59,8 @@ namespace LaraTranslateServiceLibrary
         public override RequestData ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             // Get body
-            string relativeUrl = "/translate";
-
-            //    string url = $"https://webapi.laratranslate.com/translate?text={HttpUtility.UrlEncode(input)}&sl={fromLanguage}&tl={toLanguage}";
+            String requestText = CommonMethods.EncodeGetParam(text);
+            string relativeUrl = $"/translate?text={requestText}&sl={langFrom}&tl={langTo}";
 
             // Post body
             LaraTranslateRequest contentBody = new LaraTranslateRequest()
@@ -74,9 +75,9 @@ namespace LaraTranslateServiceLibrary
 
             Dictionary<string, string> headers = new Dictionary<string, string>
             {
-                { "Accept", "application/json" },
-                { "Origin", "https://laratranslate.com" },
-                { "Referer", "https://laratranslate.com" }
+                { HeaderNames.Accept, "application/json" },
+                { HeaderNames.Origin, "https://laratranslate.com" },
+                { HeaderNames.Referer, "https://laratranslate.com" }
             };
 
             return new RequestData()

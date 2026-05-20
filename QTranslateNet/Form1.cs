@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Authentication;
 using System.Windows.Forms;
 
 using GoogleTranslateServiceLibrary;
@@ -73,13 +72,13 @@ namespace QTranslateNet
 
             SocketsHttpHandler handler = new SocketsHttpHandler()
             {
-                SslOptions =
-                {
-                    // EnabledSslProtocols = SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11
-                    EnabledSslProtocols = SslProtocols.Default
-                },
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
+
+            if (request.SslProtocols != null)
+            {
+                handler.SslOptions.EnabledSslProtocols = request.SslProtocols.Value;
+            }
 
             HttpClient httpClient = new HttpClient(handler)
             {

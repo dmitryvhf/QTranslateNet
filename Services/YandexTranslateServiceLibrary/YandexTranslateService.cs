@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 
+using Microsoft.Net.Http.Headers;
+
 using QTranslateNet.Core;
 using QTranslateNet.Core.Helpers;
 using QTranslateNet.Core.Infrastructure;
@@ -76,8 +78,8 @@ namespace YandexTranslateServiceLibrary
                 ["text"] = CommonMethods.EncodePostParam(text)
             });
 
-            Dictionary<string, string> requestHeaders = CommonMethods.HttpGetDefaultHeaders();
-            requestHeaders.Add("Referer", "https://translate.yandex.com");
+            Dictionary<string, string> requestHeaders = CommonMethods.HttpDefaultHeaders();
+            requestHeaders.Add(HeaderNames.Referer, "https://translate.yandex.com");
 
             return new RequestData()
             {

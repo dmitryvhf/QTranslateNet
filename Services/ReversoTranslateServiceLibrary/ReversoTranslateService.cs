@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Web;
+using System.Security.Authentication;
+
+using Microsoft.Net.Http.Headers;
 
 using QTranslateNet.Core;
 using QTranslateNet.Core.Helpers;
@@ -94,31 +96,28 @@ namespace ReversoTranslateServiceLibrary
 
             JsonContent content = JsonContent.Create(contentBody);
 
-            Dictionary<string, string> headers = CommonMethods.HttpGetDefaultHeaders();
-            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko");
+            Dictionary<string, string> headers = CommonMethods.HttpDefaultHeaders();
+            headers.Add(HeaderNames.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko");
 
             return new RequestData()
             {
                 RelativeUrl = url,
                 Method = RequestHttpMethodType.HttpPost,
                 Body = content,
-                Headers = headers
+                Headers = headers,
+                SslProtocols = SslProtocols.Default
             };
         }
 
         /// <inheritdoc/>
         public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
         {
-            string result = response.Content.ReadAsStringAsync().Result;
-
-            // string result = response.Content.ReadFromJsonAsync().Result;
-
-            // todo json parse?
-            // result = result.Substring(4, result.IndexOf('"', 4) - 4);
+            // string result = response.Content.ReadAsStringAsync().Result;
+            ReversoTranslateResponse result = response.Content.ReadFromJsonAsync<ReversoTranslateResponse>().Result!;
 
             return new ResponseData()
             {
-                Text = result,
+                Text = result.Translation.FirstOrDefault() ?? "[No data returned]",
                 From = langFrom,
                 To = langTo
             };

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 
+using Microsoft.Net.Http.Headers;
+
 using QTranslateNet.Core.Infrastructure;
 
 namespace QTranslateNet.Core.Helpers
@@ -12,10 +14,14 @@ namespace QTranslateNet.Core.Helpers
         /// <summary>
         ///     Получить набор заголовков для HttpGet запросов
         /// </summary>
+        /// <remarks>
+        ///     Используйте пакет Microsoft.Net.Http.Headers, с константами имён заголовков (HeaderNames),
+        ///     при добавлении свох значений в коллекцию.
+        /// </remarks>
         /// <returns>
         ///     Коллекция заголовков требуемых, по умолчанию, во всех сервисах.
         /// </returns>
-        public static Dictionary<string, string> HttpGetDefaultHeaders()
+        public static Dictionary<string, string> HttpDefaultHeaders()
         {
             // TODO Options.LanguageCode найти как читается.
             // По умолчанию: en
@@ -24,18 +30,25 @@ namespace QTranslateNet.Core.Helpers
 
             Dictionary<string, string> headers = new Dictionary<string, string>
             {
-                { "Accept", "*/*" },
-                { "Accept-Language", appLanguage + ";q=0.8,en-US;q=0.6,en;q=0.4" },
-                { "Accept-Encoding", "gzip,deflate" },
-                { "Accept-Charset", "utf-8" }
+                { HeaderNames.Accept, "*/*" },
+                { HeaderNames.AcceptLanguage, appLanguage + ";q=0.8,en-US;q=0.6,en;q=0.4" },
+                { HeaderNames.AcceptEncoding, "gzip,deflate" },
+                { HeaderNames.AcceptCharset, "utf-8" }
             };
 
             return headers;
         }
 
         /// <summary>
-        ///     Получить набор заголовков для HttpPost запросов
+        ///     Получить набор заголовков для HttpPost запросов.
         /// </summary>
+        /// <remarks>
+        ///     Добавляет заголовок "Content-Type" в зависимости от типа тела запроса.
+        ///     <pre>
+        ///         Используйте пакет Microsoft.Net.Http.Headers, с константами имён заголовков (HeaderNames),
+        ///         при добавлении свох значений в коллекцию.
+        ///     </pre>
+        /// </remarks>
         /// <param name="json">
         ///     Используется формат данных JSON.
         ///     Если нет, то, по умолчанию, form-urlencoded.
@@ -44,12 +57,13 @@ namespace QTranslateNet.Core.Helpers
         ///     Коллекция заголовков требуемых, по умолчанию, во всех сервисах.
         ///     По умолчанию, включает в себя заголовки для GET запросов.
         /// </returns>
+        [Obsolete("Используйте конкретный тип HttpContent для формирования нужных заголовоков тела запроса.")]
         public static Dictionary<string, string> HttpPostDefaultHeaders(bool json = false)
         {
-            Dictionary<string, string> headers = HttpGetDefaultHeaders();
+            Dictionary<string, string> headers = HttpDefaultHeaders();
 
             string type = json ? "application/json" : "application/x-www-form-urlencoded";
-            headers.Add("Content-Type", type + ";charset=utf-8");
+            headers.Add(HeaderNames.ContentType, type + ";charset=utf-8");
 
             return headers;
         }
