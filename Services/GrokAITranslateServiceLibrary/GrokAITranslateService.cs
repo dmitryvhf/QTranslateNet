@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Web;
 
+using Microsoft.Net.Http.Headers;
+
 using QTranslateNet.Core;
 using QTranslateNet.Core.Helpers;
 using QTranslateNet.Core.Infrastructure;
@@ -70,9 +72,9 @@ namespace GrokAITranslateServiceLibrary
             // Post body
             Dictionary<string, string> requestHeaders = new Dictionary<string, string>
             {
-                { "Accept", "application/json" },
-                { "Accept-Charset", "utf-8" },
-                { "Connection", "keep-alive" }
+                { HeaderNames.Accept, "application/json" },
+                { HeaderNames.AcceptCharset, "utf-8" },
+                { HeaderNames.Connection, "keep-alive" }
             };
 
             return new RequestData()

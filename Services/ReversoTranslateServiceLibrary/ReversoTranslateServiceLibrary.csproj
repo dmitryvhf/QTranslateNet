@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <PlatformTarget>x64</PlatformTarget>
+        <NeutralLanguage>en</NeutralLanguage>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Resources\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\QTranslateNet.Core\QTranslateNet.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="ReversoTranslateResource.Designer.cs">
+            <DependentUpon>ReversoTranslateResource.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="ReversoTranslateResource.resx">
+            <LastGenOutput>ReversoTranslateResource.Designer.cs</LastGenOutput>
+            <Generator>ResXFileCodeGenerator</Generator>
+        </EmbeddedResource>
+    </ItemGroup>
+
+</Project>

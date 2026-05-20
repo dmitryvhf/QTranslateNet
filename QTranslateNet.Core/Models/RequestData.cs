@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Authentication;
 
 using QTranslateNet.Core.Infrastructure;
 
@@ -11,6 +12,8 @@ namespace QTranslateNet.Core.Models
     /// </summary>
     public class RequestData
     {
+        #region QTranslate base properties
+
         /// <summary>
         ///     Тип метода запроса к API
         /// </summary>
@@ -37,6 +40,10 @@ namespace QTranslateNet.Core.Models
         /// <summary>
         ///     Список заголовков для запроса
         /// </summary>
+        /// <remarks>
+        ///     Используйте пакет Microsoft.Net.Http.Headers, с константами имён заголовков (HeaderNames),
+        ///     при добавлении свох значений в коллекцию.
+        /// </remarks>
         public Dictionary<String, String> Headers { get; init; } = new Dictionary<String, String>();
 
         ///// <summary>
@@ -48,5 +55,16 @@ namespace QTranslateNet.Core.Models
         /////     Callback для JSONP
         ///// </summary>
         //public required String? Callback { get; init; }
+
+        #endregion
+
+        #region QTranslateNet properties
+
+        /// <summary>
+        ///     Определённый набор поддерживаемых безопасных протоколов соединения HttpClient
+        /// </summary>
+        public SslProtocols? SslProtocols { get; init; }
+
+        #endregion
     }
 }
