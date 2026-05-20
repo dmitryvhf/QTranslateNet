@@ -105,7 +105,11 @@ namespace ReversoTranslateServiceLibrary
                 Method = RequestHttpMethodType.HttpPost,
                 Body = content,
                 Headers = headers,
+#pragma warning disable CA5397 // Do not use deprecated SslProtocols values
+#pragma warning disable CS0618 // Type or member is obsolete
                 SslProtocols = SslProtocols.Default
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CA5397 // Do not use deprecated SslProtocols values
             };
         }
 

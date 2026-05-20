@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Windows.Forms;
 
 using GoogleTranslateServiceLibrary;
@@ -57,79 +54,17 @@ namespace QTranslateNet
                 return;
             }
 
-            // Step: prepare request models
             string langFrom = comboBoxFrom.SelectedValue!.ToString()!;
             string langTo = comboBoxTo.SelectedValue!.ToString()!;
             string originalText = textBoxFrom.Text;
 
-            RequestData request = _currentTranslateService.ServiceTranslateRequest(
-                originalText, langFrom, langTo);
-
-            HttpResponseMessage? response;
-
-            // Step: translate request by API
-            toolStripStatusLabel1.Text = "Translating...";
-
-            SocketsHttpHandler handler = new SocketsHttpHandler()
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
-
-            if (request.SslProtocols != null)
-            {
-                handler.SslOptions.EnabledSslProtocols = request.SslProtocols.Value;
-            }
-
-            HttpClient httpClient = new HttpClient(handler)
-            {
-                Timeout = TimeSpan.FromSeconds(MyConstants.TimeoutSeconds),
-                BaseAddress = new Uri(_currentTranslateService.GetServiceHost(originalText, langFrom, langTo)),
-            };
-
-            foreach (KeyValuePair<string, string> item in request.Headers)
-            {
-                // Content-Type должен придти с HttpContent
-                if (item.Key == "Content-Type")
-                {
-                    continue;
-                }
-
-                httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
-            }
-
-            // TODO try-catch
-            switch (request.Method)
-            {
-                case RequestHttpMethodType.HttpGet:
-                    response = httpClient.GetAsync(request.RelativeUrl).Result;
-                    break;
-                case RequestHttpMethodType.HttpPost:
-                    response = httpClient.PostAsync(request.RelativeUrl, request.Body).Result;
-                    break;
-                default:
-                    throw new UnreachableException();
-            }
-
-            httpClient.Dispose();
-
-            // Error request validation
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                toolStripStatusLabel1.Text = "[ERR] Request error with status " + response.StatusCode + $"[{(int)response.StatusCode}]";
-                textBoxTo.Text = response.Content.ReadAsStringAsync().Result;
-
-                return;
-            }
-
-            // Step: response parsing
-            toolStripStatusLabel1.Text = "Parsing...";
-            textBoxTo.Text = String.Empty;
-
-            ResponseData responseData = _currentTranslateService.ServiceTranslateResponse(response, langFrom, langTo);
-
-            textBoxTo.Text = responseData.Text;
-
-            toolStripStatusLabel1.Text = String.Empty;
+            TranslateService.Translate(
+                _currentTranslateService,
+                originalText,
+                langFrom,
+                langTo,
+                toolStripStatusLabel1,
+                textBoxTo);
         }
 
         private void BtnClear_Click(object sender, EventArgs e)

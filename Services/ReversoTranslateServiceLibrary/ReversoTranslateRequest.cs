@@ -15,21 +15,21 @@ namespace ReversoTranslateServiceLibrary
         public required String Input { get; set; }
 
         [JsonPropertyName("format")]
-        public String Format => "text";
+        public String Format { get; } = "text";
 
         [JsonPropertyName("options")]
-        public ReversoTranslateOptionsRequest Options => new ReversoTranslateOptionsRequest();
+        public ReversoTranslateOptionsRequest Options { get; } = new ReversoTranslateOptionsRequest();
     }
 
     internal sealed class ReversoTranslateOptionsRequest
     {
         [JsonPropertyName("origin")]
-        public String Origin => "contextweb";
+        public String Origin { get; } = "contextweb";
 
         [JsonPropertyName("sentenceSplitter")]
-        public bool SentenceSplitter => true;
+        public bool SentenceSplitter { get; } = true;
 
         [JsonPropertyName("contextResults")]
-        public bool ContextResults => true;
+        public bool ContextResults { get; } = true;
     }
 }
