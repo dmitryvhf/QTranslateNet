@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
 
+using Microsoft.Net.Http.Headers;
+
 using QTranslateNet.Core;
 using QTranslateNet.Core.Infrastructure;
 using QTranslateNet.Core.Models;
@@ -17,24 +19,25 @@ namespace QTranslateNet
         /// <summary>
         ///     Выполнить перевод с указанными настройками
         /// </summary>
-        /// <param name="currentTranslateService"></param>
-        /// <returns></returns>
-        /// <exception cref="UnreachableException"></exception>
+        /// <param name="currentTranslateService">Выбранный сервис перевода</param>
+        /// <param name="originalText">Перводимый текст</param>
+        /// <param name="langFrom">Язык переводимого текста</param>
+        /// <param name="langTo">Язык перевода</param>
+        /// <param name="statusLabelControl">Контрол вывода служебных сообщений</param>
+        /// <param name="resultTextBoxControl">Текстовый контрол вывода результата перевода</param>
+        /// <exception cref="UnreachableException">Неизвестный тип запроса</exception>
+        /// <exception cref="ArgumentException">Не заполнено тело HttpPost запроса</exception>
         public static void Translate(
             ITranslateService currentTranslateService,
             String originalText,
             String langFrom,
             String langTo,
             ToolStripStatusLabel statusLabelControl,
-            Control resultTextBoxControl)
+            TextBox resultTextBoxControl)
         {
             // Step: prepare request: models and http client
             RequestData request = currentTranslateService.ServiceTranslateRequest(
                 originalText, langFrom, langTo);
-
-            HttpResponseMessage? response;
-
-            statusLabelControl.Text = "Translating...";
 
             SocketsHttpHandler handler = new SocketsHttpHandler()
             {
@@ -55,7 +58,7 @@ namespace QTranslateNet
             foreach (KeyValuePair<string, string> item in request.Headers)
             {
                 // Content-Type должен придти с HttpContent
-                if (item.Key == "Content-Type")
+                if (item.Key == HeaderNames.ContentType)
                 {
                     continue;
                 }
@@ -63,29 +66,40 @@ namespace QTranslateNet
                 httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
             }
 
-            // TODO try-catch
             // Step: translate request by API
+            statusLabelControl.Text = "Translating...";
+
+            HttpResponseMessage? response;
+
+            // TODO try-catch
             switch (request.Method)
             {
                 case RequestHttpMethodType.HttpGet:
                     response = httpClient.GetAsync(request.RelativeUrl).Result;
                     break;
                 case RequestHttpMethodType.HttpPost:
+                    if (request.Body == null)
+                    {
+                        throw new ArgumentException("[ERR] Не заполнено тело запроса");
+                    }
+
                     response = httpClient.PostAsync(request.RelativeUrl, request.Body).Result;
+                    request.Body.Dispose();
                     break;
                 default:
                     throw new UnreachableException();
             }
 
-            //handler.Dispose();
-            //httpClient.Dispose();
+            handler.Dispose();
+            httpClient.Dispose();
 
             // Error request validation
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                statusLabelControl.Text = "[ERR] Request error with status " + response.StatusCode + $"[{(int)response.StatusCode}]";
+                statusLabelControl.Text = "[ERR] Запрос вернулся с ошибкой: " + response.StatusCode + $"[{(int)response.StatusCode}]";
                 resultTextBoxControl.Text = response.Content.ReadAsStringAsync().Result;
 
+                response.Dispose();
                 return;
             }
 
@@ -94,6 +108,7 @@ namespace QTranslateNet
             resultTextBoxControl.Text = String.Empty;
 
             ResponseData responseData = currentTranslateService.ServiceTranslateResponse(response, langFrom, langTo);
+            response.Dispose();
 
             // Step: output result
             resultTextBoxControl.Text = responseData.Text;

@@ -33,6 +33,12 @@ namespace QTranslateNet
             InitializeComponent();
 
             InitializeTranslateServices();
+
+#if DEBUG
+            textBoxFrom.Text = "home";
+#else
+            textBoxFrom.Text = String.Empty;
+#endif
         }
 
         #region GUI event methods
@@ -69,7 +75,7 @@ namespace QTranslateNet
 
         private void BtnClear_Click(object sender, EventArgs e)
         {
-            textBoxFrom.Text = "home";// String.Empty;
+            textBoxFrom.Text = String.Empty;
             textBoxTo.Text = String.Empty;
 
             toolStripStatusLabel1.Text = String.Empty;
@@ -78,8 +84,6 @@ namespace QTranslateNet
         /// <summary>
         ///     Поменять местами выбранные языки перевода
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnSwapLang_Click(object sender, EventArgs e)
         {
             (comboBoxTo.Text, comboBoxFrom.Text) = (comboBoxFrom.Text, comboBoxTo.Text);
@@ -87,46 +91,20 @@ namespace QTranslateNet
 
         private void TranslateServiceCheckBox_CheckedChanged(object? sender, EventArgs e)
         {
-            toolStripStatusLabel1.Text = String.Empty;
-
-            CheckBox control = (CheckBox)sender!;
+            RadioButton control = (RadioButton)sender!;
 
             if (_currentTranslateService != null
                 && control.AccessibleName == _currentTranslateService.GetServiceHeader().AccessibleName)
             {
                 // Сервис уже выбран
-
-                control.CheckState = CheckState.Checked;
                 return;
             }
-
-            foreach (Control flpControl in flowLayoutPanel1.Controls)
-            {
-                if (flpControl is not CheckBox flpCheckBox)
-                {
-                    continue;
-                }
-
-                flpCheckBox.CheckedChanged -= TranslateServiceCheckBox_CheckedChanged;
-
-                flpCheckBox.CheckState = CheckState.Unchecked;
-            }
-
-            control.CheckState = CheckState.Checked;
 
             _currentTranslateService = _translateServices[control.AccessibleName!];
 
             InitializeLanguageComboBoxes(_currentTranslateService);
 
-            foreach (Control flpControl in flowLayoutPanel1.Controls)
-            {
-                if (flpControl is not CheckBox flpCheckBox)
-                {
-                    continue;
-                }
-
-                flpCheckBox.CheckedChanged += TranslateServiceCheckBox_CheckedChanged;
-            }
+            toolStripStatusLabel1.Text = "[INFO] Выбран сервис: " + _currentTranslateService.GetServiceHeader().Name;
         }
 
         #endregion
@@ -179,7 +157,7 @@ namespace QTranslateNet
 
         private void InitTranslateServiceControl(ITranslateService translateService)
         {
-            CheckBox control = CreateDefaultCheckBox();
+            RadioButton control = CreateDefaultServiceSelectorControl();
             ServiceHeader serviceHeader = translateService.GetServiceHeader();
 
             using (MemoryStream ms = new MemoryStream(serviceHeader.ServiceIco))
@@ -199,16 +177,18 @@ namespace QTranslateNet
             flowLayoutPanel1.Controls.Add(control);
         }
 
-        private static CheckBox CreateDefaultCheckBox()
+        private static RadioButton CreateDefaultServiceSelectorControl()
         {
-            CheckBox control = new CheckBox
+            RadioButton control = new RadioButton
             {
                 Appearance = Appearance.Button,
+                FlatStyle = FlatStyle.Flat,
+                Margin = new Padding(0),
+                Padding = new Padding(0),
                 AutoSize = true,
                 ImageAlign = ContentAlignment.MiddleLeft,
                 TextAlign = ContentAlignment.MiddleRight,
-                TextImageRelation = TextImageRelation.ImageBeforeText,
-                UseVisualStyleBackColor = true
+                TextImageRelation = TextImageRelation.ImageBeforeText
             };
 
             return control;

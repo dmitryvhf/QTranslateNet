@@ -32,6 +32,7 @@ namespace QTranslateNet
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             comboBoxFrom = new ComboBox();
             labelFrom = new Label();
             labelTo = new Label();
@@ -92,7 +93,6 @@ namespace QTranslateNet
             textBoxFrom.ScrollBars = ScrollBars.Vertical;
             textBoxFrom.Size = new Size(465, 160);
             textBoxFrom.TabIndex = 4;
-            textBoxFrom.Text = "home";
             // 
             // textBoxTo
             // 
@@ -175,8 +175,9 @@ namespace QTranslateNet
             Controls.Add(labelFrom);
             Controls.Add(comboBoxFrom);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
-            Text = "Languages MyTranslator";
+            Text = "QTranslate.NET";
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             ResumeLayout(false);
