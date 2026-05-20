@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Windows.Forms;
 
 using GoogleTranslateServiceLibrary;
@@ -17,6 +18,8 @@ using LaraTranslateServiceLibrary;
 using QTranslateNet.Core;
 using QTranslateNet.Core.Infrastructure;
 using QTranslateNet.Core.Models;
+
+using ReversoTranslateServiceLibrary;
 
 using YandexTranslateServiceLibrary;
 
@@ -68,7 +71,17 @@ namespace QTranslateNet
             // Step: translate request by API
             toolStripStatusLabel1.Text = "Translating...";
 
-            HttpClient httpClient = new HttpClient()
+            SocketsHttpHandler handler = new SocketsHttpHandler()
+            {
+                SslOptions =
+                {
+                    // EnabledSslProtocols = SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11
+                    EnabledSslProtocols = SslProtocols.Default
+                },
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+
+            HttpClient httpClient = new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromSeconds(MyConstants.TimeoutSeconds),
                 BaseAddress = new Uri(_currentTranslateService.GetServiceHost(originalText, langFrom, langTo)),
@@ -225,6 +238,9 @@ namespace QTranslateNet
 
             ITranslateService laraTranslateService = new LaraTranslateService();
             InitTranslateServiceControl(laraTranslateService);
+
+            ITranslateService reversoTranslateService = new ReversoTranslateService();
+            InitTranslateServiceControl(reversoTranslateService);
         }
 
         private void InitTranslateServiceControl(ITranslateService translateService)
