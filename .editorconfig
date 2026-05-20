@@ -1,0 +1,46 @@
+﻿# Remove the line below if you want to inherit .editorconfig settings from higher directories
+root = true
+
+[*.cs]
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = suggestion
+
+# Default severity for analyzer diagnostics with category 'Style'
+dotnet_analyzer_diagnostic.category-Style.severity = suggestion
+
+# Default severity for analyzer diagnostics with category 'Performance'
+dotnet_analyzer_diagnostic.category-Performance.severity = suggestion
+
+# IDE0057: Use range operator
+dotnet_diagnostic.IDE0057.severity = silent
+
+# IDE0305: Simplify collection initialization
+dotnet_diagnostic.IDE0305.severity = silent
+
+# IDE0028: Simplify collection initialization
+dotnet_diagnostic.IDE0028.severity = silent
+
+# IDE0090: Use 'new(...)'
+dotnet_diagnostic.IDE0090.severity = silent
+
+# IDE0300: Simplify collection initialization
+dotnet_diagnostic.IDE0300.severity = silent
+
+# IDE0301: Simplify collection initialization
+dotnet_diagnostic.IDE0301.severity = silent
+
+# IDE0049: Simplify Names
+dotnet_diagnostic.IDE0049.severity = none
+
+# IDE0066: Convert switch statement to expression
+dotnet_diagnostic.IDE0066.severity = none
+
+# IDE0005: Using directive is unnecessary.
+dotnet_diagnostic.IDE0005.severity = silent
+
+# IDE0059: Unnecessary assignment of a value
+dotnet_diagnostic.IDE0059.severity = warning
+
+# IDE0046: Convert to conditional expression
+dotnet_diagnostic.IDE0046.severity = silent

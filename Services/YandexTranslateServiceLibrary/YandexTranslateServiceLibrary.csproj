@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<OutputType>Library</OutputType>
+		<PlatformTarget>x64</PlatformTarget>
+		<NeutralLanguage>en</NeutralLanguage>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Update="YandexTranslateResource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>YandexTranslateResource.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="YandexTranslateResource.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>YandexTranslateResource.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Resources\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\QTranslateNet.Core\QTranslateNet.Core.csproj" />
+	</ItemGroup>
+
+</Project>
