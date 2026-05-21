@@ -11,7 +11,7 @@
 **Сайт**: https://web.archive.org/web/20230227130154/https://quest-app.appspot.com/home
 
 # Возможности
-- языковые сервисы: Google Translate, Yandex Translate, GrokAI, Lara, Reverso
+- языковые сервисы: Google Translate, Yandex Translate, GrokAI, Lara, Reverso, Microsoft Translate (Bing)
 - простой перевод текста
 
 # Цели

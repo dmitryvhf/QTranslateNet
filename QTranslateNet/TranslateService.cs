@@ -35,10 +35,88 @@ namespace QTranslateNet
             ToolStripStatusLabel statusLabelControl,
             TextBox resultTextBoxControl)
         {
-            // Step: prepare request: models and http client
-            RequestData request = currentTranslateService.ServiceTranslateRequest(
-                originalText, langFrom, langTo);
+            String baseAddress = currentTranslateService.GetServiceHost(originalText, langFrom, langTo);
 
+            #region Prepare request
+
+            // Prepare request
+            if (currentTranslateService.ServiceTranslateBootstrapRequest(originalText, langFrom, langTo, out RequestData? prepareTranslateRequest))
+            {
+                HttpResponseMessage prepareTranslateResponse = ServiceRequest(prepareTranslateRequest, baseAddress, statusLabelControl);
+
+                if (prepareTranslateResponse.StatusCode != HttpStatusCode.OK)
+                {
+                    statusLabelControl.Text = "[ERR] Запрос вернулся с ошибкой: " + prepareTranslateResponse.StatusCode + $"[{(int)prepareTranslateResponse.StatusCode}]";
+                    // resultTextBoxControl.Text = prepareTranslateResponse.Content.ReadAsStringAsync().Result;
+
+                    prepareTranslateResponse.Dispose();
+                    return;
+                }
+
+                // Step: response parsing
+                statusLabelControl.Text = "Prepare...";
+                resultTextBoxControl.Text = String.Empty;
+
+                if (!currentTranslateService.ServiceTranslateBootstrapResponse(prepareTranslateResponse, langFrom, langTo))
+                {
+                    statusLabelControl.Text = "[ERR] Запрос вернулся с ошибкой: " + prepareTranslateResponse.StatusCode + $"[{(int)prepareTranslateResponse.StatusCode}]";
+                    // resultTextBoxControl.Text = prepareTranslateResponse.Content.ReadAsStringAsync().Result;
+
+                    prepareTranslateResponse.Dispose();
+                    return;
+                }
+
+                prepareTranslateResponse.Dispose();
+
+                // Step: output result
+                statusLabelControl.Text = String.Empty;
+                //resultTextBoxControl.Text = prepareResponseData.Text;
+            }
+
+            #endregion
+
+            #region Translate request
+
+            // Get request model
+            RequestData translateRequest = currentTranslateService.ServiceTranslateRequest(originalText, langFrom, langTo);
+            HttpResponseMessage translateResponse = ServiceRequest(translateRequest, baseAddress, statusLabelControl);
+            if (translateResponse.StatusCode != HttpStatusCode.OK)
+            {
+                statusLabelControl.Text = "[ERR] Запрос вернулся с ошибкой: " + translateResponse.StatusCode + $"[{(int)translateResponse.StatusCode}]";
+                resultTextBoxControl.Text = translateResponse.Content.ReadAsStringAsync().Result;
+
+                translateResponse.Dispose();
+                return;
+            }
+
+            // Step: response parsing
+            statusLabelControl.Text = "Parsing...";
+            resultTextBoxControl.Text = String.Empty;
+
+            ResponseData translateResponseData = currentTranslateService.ServiceTranslateResponse(translateResponse, langFrom, langTo);
+            translateResponse.Dispose();
+
+            // Step: output result
+            resultTextBoxControl.Text = translateResponseData.Text;
+            statusLabelControl.Text = String.Empty;
+
+            #endregion
+        }
+
+        /// <summary>
+        ///     Выполнить перевод с указанными настройками
+        /// </summary>
+        /// <param name="request">Модель запроса</param>
+        /// <param name="baseAddress">Базовый адрес сервиса</param>
+        /// <param name="statusLabelControl">Контрол вывода служебных сообщений</param>
+        /// <exception cref="UnreachableException">Неизвестный тип запроса</exception>
+        /// <exception cref="ArgumentException">Не заполнено тело HttpPost запроса</exception>
+        private static HttpResponseMessage ServiceRequest(
+            RequestData request,
+            String baseAddress,
+            ToolStripStatusLabel statusLabelControl)
+        {
+            // Step: prepare request: models and http client
             SocketsHttpHandler handler = new SocketsHttpHandler()
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
@@ -52,7 +130,7 @@ namespace QTranslateNet
             HttpClient httpClient = new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromSeconds(MyConstants.TimeoutSeconds),
-                BaseAddress = new Uri(currentTranslateService.GetServiceHost(originalText, langFrom, langTo)),
+                BaseAddress = new Uri(baseAddress),
             };
 
             foreach (KeyValuePair<string, string> item in request.Headers)
@@ -66,8 +144,8 @@ namespace QTranslateNet
                 httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
             }
 
-            // Step: translate request by API
-            statusLabelControl.Text = "Translating...";
+            // Step: request by API
+            statusLabelControl.Text = "Request...";
 
             HttpResponseMessage? response;
 
@@ -93,26 +171,7 @@ namespace QTranslateNet
             handler.Dispose();
             httpClient.Dispose();
 
-            // Error request validation
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                statusLabelControl.Text = "[ERR] Запрос вернулся с ошибкой: " + response.StatusCode + $"[{(int)response.StatusCode}]";
-                resultTextBoxControl.Text = response.Content.ReadAsStringAsync().Result;
-
-                response.Dispose();
-                return;
-            }
-
-            // Step: response parsing
-            statusLabelControl.Text = "Parsing...";
-            resultTextBoxControl.Text = String.Empty;
-
-            ResponseData responseData = currentTranslateService.ServiceTranslateResponse(response, langFrom, langTo);
-            response.Dispose();
-
-            // Step: output result
-            resultTextBoxControl.Text = responseData.Text;
-            statusLabelControl.Text = String.Empty;
+            return response;
         }
     }
 }

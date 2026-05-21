@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
 using QTranslateNet.Core.Models;
@@ -40,6 +41,43 @@ namespace QTranslateNet.Core
         /// <returns>Адрес веб-версии сервиса</returns>
         // maybe return URI?
         String GetServiceLink(String langFrom, String langTo, String text);
+
+        #region Проверка сервиса перед переводом
+
+        /// <summary>
+        ///     Сформировать запрос для проверки сервиса перед переводом
+        /// </summary>
+        /// <remarks>
+        ///     Для использования, сервис должен иметь флаг <see cref="Infrastructure.Сapability.Translate"/>
+        /// </remarks>
+        /// <param name="text">Переводимый текст</param>
+        /// <param name="from">Исходный язык текста</param>
+        /// <param name="to">Язык перевода текста</param>
+        /// <param name="requestData">Модель данных ответа</param>
+        /// <returns>
+        ///     True - если требуется выполнить специальный запрос проверки сервиса.
+        ///     Подготовлена модель данных для запроса в <paramref name="requestData"/>
+        /// </returns>
+        bool ServiceTranslateBootstrapRequest(
+            String text,
+            String langFrom,
+            String langTo,
+            [NotNullWhen(true)] out RequestData? requestData);
+
+        /// <summary>
+        ///     Разбор ответа при запросе проверке сервиса перед переводом
+        ///     методом <see cref="ServiceTranslateBootstrapRequest"/>
+        /// </summary>
+        /// <param name="response">Данные ответа от сервиса</param>
+        /// <param name="from">Исходный язык текста</param>
+        /// <param name="to">Язык перевода текста</param>
+        /// <returns>True - если данные обработаны успешно и можно продолжать запросы</returns>
+        bool ServiceTranslateBootstrapResponse(
+            HttpResponseMessage response,
+            String langFrom,
+            String langTo);
+
+        #endregion
 
         #region Перевод текста
 

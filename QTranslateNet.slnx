@@ -3,6 +3,7 @@
     <Project Path="Services/GoogleTranslateService/GoogleTranslateServiceLibrary.csproj" />
     <Project Path="Services/GrokAITranslateServiceLibrary/GrokAITranslateServiceLibrary.csproj" Id="2f93e29a-0ee3-4602-9270-eee3492fa9b0" />
     <Project Path="Services/LaraTranslateServiceLibrary/LaraTranslateServiceLibrary.csproj" Id="6d1b32ae-1b0b-4f6f-b400-2a68b8842b1f" />
+    <Project Path="Services/MicrosoftTranslateServiceLibrary/MicrosoftTranslateServiceLibrary.csproj" />
     <Project Path="Services/ReversoTranslateServiceLibrary/ReversoTranslateServiceLibrary.csproj" />
     <Project Path="Services/YandexTranslateServiceLibrary/YandexTranslateServiceLibrary.csproj" Id="85a2921d-fa60-426e-bcf7-dfd68ccec58d" />
   </Folder>

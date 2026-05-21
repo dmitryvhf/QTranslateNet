@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text;
 
@@ -84,6 +85,30 @@ namespace QTranslateNet.Core
 
         /// <inheritdoc />
         public abstract String GetServiceLink(String langFrom, String langTo, String text);
+
+        #region Запросы для подготовки сервиса
+
+        /// <inheritdoc />
+        public virtual bool ServiceTranslateBootstrapRequest(
+            String text,
+            String langFrom,
+            String langTo,
+            [NotNullWhen(true)] out RequestData? requestData)
+        {
+            requestData = null;
+            return false;
+        }
+
+        /// <inheritdoc />
+        public virtual bool ServiceTranslateBootstrapResponse(
+            HttpResponseMessage response,
+            String langFrom,
+            String langTo)
+        {
+            return false;
+        }
+
+        #endregion
 
         #region Перевод текста
 

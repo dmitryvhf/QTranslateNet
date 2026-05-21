@@ -11,6 +11,8 @@ using GrokAITranslateServiceLibrary;
 
 using LaraTranslateServiceLibrary;
 
+using MicrosoftTranslateServiceLibrary;
+
 using QTranslateNet.Core;
 using QTranslateNet.Core.Infrastructure;
 using QTranslateNet.Core.Models;
@@ -153,6 +155,9 @@ namespace QTranslateNet
 
             ITranslateService reversoTranslateService = new ReversoTranslateService();
             InitTranslateServiceControl(reversoTranslateService);
+
+            ITranslateService microsoftTranslateService = new MicrosoftTranslateService();
+            InitTranslateServiceControl(microsoftTranslateService);
         }
 
         private void InitTranslateServiceControl(ITranslateService translateService)
