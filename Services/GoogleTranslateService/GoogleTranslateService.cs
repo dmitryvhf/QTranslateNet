@@ -14,7 +14,7 @@ namespace GoogleTranslateServiceLibrary
     /// </summary>
     public class GoogleTranslateService : TranslateServiceBase
     {
-        #region Private consts
+        #region TranslateServiceBase implementation
 
         /// <inheritdoc/>
         protected override String BaseUrlApi => "https://translate.googleapis.com";
@@ -40,18 +40,6 @@ namespace GoogleTranslateServiceLibrary
 
         /// <inheritdoc/>
         protected override Сapability[] Сapabilities => new Сapability[] { Сapability.Translate };
-
-        #endregion
-
-        #region Constructors
-
-        public GoogleTranslateService()
-        {
-        }
-
-        #endregion
-
-        #region TranslateServiceBase implementation
 
         /// <inheritdoc/>
         public override string GetServiceHost(string langFrom, string langTo, string text)

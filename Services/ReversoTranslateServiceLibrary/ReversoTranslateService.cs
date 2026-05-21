@@ -19,7 +19,7 @@ namespace ReversoTranslateServiceLibrary
     /// </summary>
     public class ReversoTranslateService : TranslateServiceBase
     {
-        #region Private consts
+        #region TranslateServiceBase implementation
 
         /// <inheritdoc/>
         protected override String BaseUrlApi => "https://api.reverso.net";
@@ -51,18 +51,6 @@ namespace ReversoTranslateServiceLibrary
         //{
         //    "-1", "auto", "eng", "rus"
         //};
-
-        #endregion
-
-        #region Constructors
-
-        public ReversoTranslateService()
-        {
-        }
-
-        #endregion
-
-        #region TranslateServiceBase implementation
 
         /// <inheritdoc/>
         public override string GetServiceHost(string langFrom, string langTo, string text)
