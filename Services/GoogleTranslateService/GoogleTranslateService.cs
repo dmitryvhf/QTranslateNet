@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
-using System.Web;
 
 using QTranslateNet.Core;
 using QTranslateNet.Core.Helpers;
@@ -39,7 +39,17 @@ namespace GoogleTranslateServiceLibrary
         protected override byte[] ServiceIco => GoogleTranslateResource.ServiceIco;
 
         /// <inheritdoc/>
-        protected override Сapability[] Сapabilities => new Сapability[] { Сapability.Translate };
+        protected override Capability[] Capabilities => new Capability[] { Capability.Translate, Capability.DetectLanguage };
+
+        protected override string[] SupportedLanguages
+        {
+            get
+            {
+                return base.SupportedLanguages
+                    .Where(x => x == "en" || x == "ru")
+                    .ToArray();
+            }
+        }
 
         /// <inheritdoc/>
         public override string GetServiceHost(string langFrom, string langTo, string text)

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Web;
 
 using Microsoft.Net.Http.Headers;
 
@@ -42,7 +44,7 @@ namespace YandexTranslateServiceLibrary
         protected override byte[] ServiceIco => YandexTranslateResource.ServiceIco;
 
         /// <inheritdoc/>
-        protected override Сapability[] Сapabilities => new Сapability[] { Сapability.Translate };
+        protected override Capability[] Capabilities => new Capability[] { Capability.Translate };
 
         /// <inheritdoc/>
         public override String GetServiceHost(string langFrom, string langTo, string text)
@@ -93,9 +95,10 @@ namespace YandexTranslateServiceLibrary
         /// <inheritdoc/>
         public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
         {
+            // string json = response.Content.ReadAsStringAsync().Result;
             YandexResponse yandexResponse = response.Content.ReadFromJsonAsync<YandexResponse>().Result!;
 
-            string result = String.Join("\n", yandexResponse.Text);
+            string result = HttpUtility.UrlDecode(String.Join("\n", yandexResponse.Text));
 
             return new ResponseData()
             {

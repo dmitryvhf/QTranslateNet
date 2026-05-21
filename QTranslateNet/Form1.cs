@@ -123,6 +123,16 @@ namespace QTranslateNet
                     .Where(x => serviceLangs.Contains(x.Code))
                     .ToArray();
 
+            if (currentTranslateService.GetServiceHeader().Capabilities.Contains(Capability.DetectLanguage))
+            {
+                supportedLanguages = new SupportedLanguage[]
+                {
+                   MyConstants.AutoDetectLanguage
+                }
+                .Concat(supportedLanguages)
+                .ToArray();
+            }
+
             comboBoxFrom.DataSource = new BindingSource() { DataSource = supportedLanguages };
             comboBoxFrom.ValueMember = nameof(SupportedLanguage.Code);
             comboBoxFrom.DisplayMember = nameof(SupportedLanguage.Name);

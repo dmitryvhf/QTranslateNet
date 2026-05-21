@@ -6,7 +6,7 @@ namespace QTranslateNet.Core.Infrastructure
     /// <summary>
     ///     Возможности приложения
     /// </summary>
-    public enum Сapability
+    public enum Capability
     {
         /// <summary>
         ///     Перевод текста

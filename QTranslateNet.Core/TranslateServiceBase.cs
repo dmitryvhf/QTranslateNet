@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 
@@ -13,6 +14,8 @@ namespace QTranslateNet.Core
     /// </summary>
     public abstract class TranslateServiceBase : ITranslateService
     {
+        private ServiceHeader? _serviceHeader;
+
         #region Required service properties
 
         /// <summary>
@@ -52,32 +55,34 @@ namespace QTranslateNet.Core
         protected abstract byte[] ServiceIco { get; }
 
         /// <summary>
+        ///     Список возможностей сервиса
+        /// </summary>
+        protected abstract Capability[] Capabilities { get; }
+
+        /// <summary>
         ///     Список поддерживаемых языков
         /// </summary>
         /// <remarks>
         ///     Если пустой массив - используется полный глобальный список поддерживаемых языков.
         /// </remarks>
-        protected virtual String[] SupportedLanguages { get; } = Array.Empty<string>();
-
-        /// <summary>
-        ///     Список возможностей сервиса
-        /// </summary>
-        protected abstract Сapability[] Сapabilities { get; }
+        protected virtual String[] SupportedLanguages { get; }
+            = MyConstants.SupportedLanguage.Select(x => x.Code).ToArray();
 
         #endregion
 
         /// <inheritdoc />
         public virtual ServiceHeader GetServiceHeader()
         {
-            return new ServiceHeader()
-            {
-                AccessibleName = AccessibleName,
-                Info = Info,
-                Name = Name,
-                ServiceIco = ServiceIco,
-                SupportedLanguages = SupportedLanguages,
-                Сapabilities = new Сapability[] { Сapability.Translate }
-            };
+            return _serviceHeader ??=
+                new ServiceHeader()
+                {
+                    AccessibleName = AccessibleName,
+                    Info = Info,
+                    Name = Name,
+                    ServiceIco = ServiceIco,
+                    SupportedLanguages = SupportedLanguages,
+                    Capabilities = Capabilities
+                };
         }
 
         /// <inheritdoc />

@@ -61,7 +61,7 @@ namespace MicrosoftTranslateServiceLibrary
         protected override byte[] ServiceIco => MicrosoftTranslateResource.ServiceIco;
 
         /// <inheritdoc/>
-        protected override Сapability[] Сapabilities => new Сapability[] { Сapability.Translate };
+        protected override Capability[] Capabilities => new Capability[] { Capability.Translate };
 
         /// <inheritdoc/>
         public override String GetServiceHost(string langFrom, string langTo, string text)

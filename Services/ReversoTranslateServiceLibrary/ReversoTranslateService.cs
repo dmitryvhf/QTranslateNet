@@ -44,7 +44,7 @@ namespace ReversoTranslateServiceLibrary
         protected override byte[] ServiceIco => ReversoTranslateResource.ServiceIco;
 
         /// <inheritdoc/>
-        protected override Сapability[] Сapabilities => new Сapability[] { Сapability.Translate };
+        protected override Capability[] Capabilities => new Capability[] { Capability.Translate };
 
         ///// <inheritdoc/>
         //protected override string[] SupportedLanguages => new string[]
