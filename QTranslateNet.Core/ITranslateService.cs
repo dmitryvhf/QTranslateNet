@@ -90,18 +90,18 @@ namespace QTranslateNet.Core
         /// <param name="text">Переводимый текст</param>
         /// <param name="from">Исходный язык текста</param>
         /// <param name="to">Язык перевода текста</param>
-        /// <returns>Модель данных для запроса</returns>
-        RequestData ServiceTranslateRequest(String text, String langFrom, String langTo);
+        /// <returns>Модели данных для запроса</returns>
+        RequestData[] ServiceTranslateRequest(String text, String langFrom, String langTo);
 
         /// <summary>
         ///     Разбор ответа при переводе
         ///     методом <see cref="ServiceTranslateRequest"/>
         /// </summary>
-        /// <param name="response">Данные ответа от сервиса</param>
+        /// <param name="responses">Данные ответа от сервиса</param>
         /// <param name="from">Исходный язык текста</param>
         /// <param name="to">Язык перевода текста</param>
         /// <returns>Модель данных ответа</returns>
-        ResponseData ServiceTranslateResponse(HttpResponseMessage response, String langFrom, String langTo);
+        ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, String langFrom, String langTo);
 
         #endregion
 

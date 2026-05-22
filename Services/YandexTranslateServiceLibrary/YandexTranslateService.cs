@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Web;
 
 using Microsoft.Net.Http.Headers;
 
@@ -17,6 +19,15 @@ namespace YandexTranslateServiceLibrary
     /// </summary>
     public class YandexTranslateService : TranslateServiceBase
     {
+        #region Private consts
+
+        private const Int32 YANDEX_MAX_SOURCE_LEN = 10000;
+        private const Int32 YANDEX_EMERGENCY_CHUNK_LEN = 180;
+        // private const Int32 YANDEX_MAX_CHUNK_LEN = 600;
+        // private const Int32 YANDEX_MAX_RETRY_PER_CHUNK = 2;
+
+        #endregion
+
         #region TranslateServiceBase implementation
 
         /// <inheritdoc/>
@@ -58,7 +69,7 @@ namespace YandexTranslateServiceLibrary
         }
 
         /// <inheritdoc/>
-        public override RequestData ServiceTranslateRequest(string text, string langFrom, string langTo)
+        public override RequestData[] ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             // Get body
             String YandexAppId1 = Guid.NewGuid().ToString().Replace("-", "").ToLowerInvariant();
@@ -69,37 +80,61 @@ namespace YandexTranslateServiceLibrary
                 + $"&lang={langFrom}-{langTo}"
                 + "&reason=auto"
                 + "&format=text"
+                + "&options=4"
                 + "&yu=2210680511641235828";
 
             // Post body
-            HttpContent content = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                ["text"] = CommonMethods.EncodePostParam(text)
-            });
-
             Dictionary<string, string> requestHeaders = CommonMethods.HttpDefaultHeaders();
-            requestHeaders.Add(HeaderNames.Referer, "https://translate.yandex.com");
+            _ = requestHeaders.Remove(HeaderNames.AcceptEncoding);
 
-            return new RequestData()
+            requestHeaders.Add(HeaderNames.AcceptEncoding, "identity");
+            requestHeaders.Add(HeaderNames.Referer, BaseUrlWeb);
+            requestHeaders.Add(HeaderNames.Origin, BaseUrlWeb);
+            requestHeaders.Add(HeaderNames.XRequestedWith, "XMLHttpRequest");
+            requestHeaders.Add(HeaderNames.Connection, "keep-alive");
+
+            List<RequestData> requests = new List<RequestData>();
+            String limitedText = CommonMethods.LimitSource(text, YANDEX_MAX_SOURCE_LEN);
+            String[] chunchedText = CommonMethods.ChunkByWordLimit(limitedText, YANDEX_EMERGENCY_CHUNK_LEN).ToArray();
+
+            foreach (string requestText in chunchedText)
             {
-                RelativeUrl = url,
-                Method = RequestHttpMethodType.HttpPost,
-                Body = content,
-                Headers = requestHeaders
-            };
+                HttpContent content = new FormUrlEncodedContent(
+                new Dictionary<string, string>
+                {
+                    ["text"] = requestText
+                });
+
+                requests.Add(new RequestData()
+                {
+                    RelativeUrl = url,
+                    Method = RequestHttpMethodType.HttpPost,
+                    Body = content,
+                    Headers = requestHeaders
+                });
+            }
+
+            return requests.ToArray();
         }
 
         /// <inheritdoc/>
-        public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
+        public override ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, string langFrom, string langTo)
         {
-            YandexResponse yandexResponse = response.Content.ReadFromJsonAsync<YandexResponse>().Result!;
+            String resultTranslatedText = String.Empty;
 
-            string result = String.Join("\n", yandexResponse.Text);
+            foreach (HttpResponseMessage responseText in responses)
+            {
+                string json = responseText.Content.ReadAsStringAsync().Result;
+
+                YandexResponse yandexResponse = responseText.Content.ReadFromJsonAsync<YandexResponse>().Result!;
+
+                // TODO Определять конечный символ. Если не "." то можно ставить пробел? А когда переносы строки?
+                resultTranslatedText += String.Join("\n", yandexResponse.Text.First()) + " ";
+            }
 
             return new ResponseData()
             {
-                Text = result,
+                Text = resultTranslatedText.Trim(),
                 From = langFrom,
                 To = langTo
             };

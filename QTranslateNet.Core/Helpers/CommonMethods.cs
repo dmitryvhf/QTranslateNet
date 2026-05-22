@@ -182,7 +182,56 @@ limitSource(text, maxLen)           // Обрезка текста под лим
 
         #region Разное
 
+        /// <summary>
+        ///     Разбить текст на блоки с указанной длиной
+        /// </summary>
+        /// <param name="text">Оригинальный текст</param>
+        /// <param name="maxLength">Ограничение длины текста каждого блока</param>
+        /// <returns>Коллекция текста, разбитого на блоки</returns>
+        public static IEnumerable<string> ChunkByWordLimit(String text, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                yield break;
+            }
 
+            string[] words = text.Split(' ');
+            var currentChunk = new StringBuilder();
+
+            foreach (string word in words)
+            {
+                // If the word itself exceeds the max length, yield it as is 
+                // or handle it depending on your specific fallback requirement.
+                if (word.Length > maxLength)
+                {
+                    if (currentChunk.Length > 0)
+                    {
+                        yield return currentChunk.ToString().Trim();
+
+                        _ = currentChunk.Clear();
+                    }
+                    yield return word;
+                    continue;
+                }
+
+                // Calculate hypothetical length with the new word and a space
+                int potentialLength = currentChunk.Length + word.Length + 1;
+
+                if (potentialLength > maxLength)
+                {
+                    yield return currentChunk.ToString().Trim();
+
+                    _ = currentChunk.Clear();
+                }
+
+                _ = currentChunk.Append(word).Append(' ');
+            }
+
+            if (currentChunk.Length > 0)
+            {
+                yield return currentChunk.ToString().Trim();
+            }
+        }
 
         #endregion
     }

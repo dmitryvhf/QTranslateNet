@@ -78,23 +78,42 @@ namespace QTranslateNet
             #region Translate request
 
             // Get request model
-            RequestData translateRequest = currentTranslateService.ServiceTranslateRequest(originalText, langFrom, langTo);
-            HttpResponseMessage translateResponse = ServiceRequest(translateRequest, baseAddress, statusLabelControl);
-            if (translateResponse.StatusCode != HttpStatusCode.OK)
-            {
-                statusLabelControl.Text = "[ERR] Запрос вернулся с ошибкой: " + translateResponse.StatusCode + $"[{(int)translateResponse.StatusCode}]";
-                resultTextBoxControl.Text = translateResponse.Content.ReadAsStringAsync().Result;
+            List<HttpResponseMessage> translateResponses = new List<HttpResponseMessage>();
+            RequestData[] translateRequests = currentTranslateService.ServiceTranslateRequest(originalText, langFrom, langTo);
 
-                translateResponse.Dispose();
-                return;
+            foreach (RequestData translateRequest in translateRequests)
+            {
+                HttpResponseMessage translateResponse = ServiceRequest(translateRequest, baseAddress, statusLabelControl);
+                if (translateResponse.StatusCode != HttpStatusCode.OK)
+                {
+                    statusLabelControl.Text = "[ERR] Запрос вернулся с ошибкой: " + translateResponse.StatusCode + $"[{(int)translateResponse.StatusCode}]";
+                    resultTextBoxControl.Text = translateResponse.Content.ReadAsStringAsync().Result;
+
+                    for (int i = 0; i < translateResponses.Count; i++)
+                    {
+                        translateResponses[i].Dispose();
+                    }
+
+                    foreach (HttpResponseMessage translateResponseForDispose in translateResponses)
+                    {
+                        translateResponseForDispose.Dispose();
+                    }
+                    return;
+                }
+
+                translateResponses.Add(translateResponse);
+
             }
 
             // Step: response parsing
             statusLabelControl.Text = "Parsing...";
             resultTextBoxControl.Text = String.Empty;
 
-            ResponseData translateResponseData = currentTranslateService.ServiceTranslateResponse(translateResponse, langFrom, langTo);
-            translateResponse.Dispose();
+            ResponseData translateResponseData = currentTranslateService.ServiceTranslateResponse(translateResponses.ToArray(), langFrom, langTo);
+            for (int i = 0; i < translateResponses.Count; i++)
+            {
+                translateResponses[i].Dispose();
+            }
 
             // Step: output result
             resultTextBoxControl.Text = translateResponseData.Text;

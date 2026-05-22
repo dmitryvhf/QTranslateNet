@@ -65,7 +65,7 @@ namespace ReversoTranslateServiceLibrary
         }
 
         /// <inheritdoc/>
-        public override RequestData ServiceTranslateRequest(string text, string langFrom, string langTo)
+        public override RequestData[] ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             // Get body
             string url = "/translate/v1/translation";
@@ -87,25 +87,28 @@ namespace ReversoTranslateServiceLibrary
             Dictionary<string, string> headers = CommonMethods.HttpDefaultHeaders();
             headers.Add(HeaderNames.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko");
 
-            return new RequestData()
+            return new RequestData[]
             {
-                RelativeUrl = url,
-                Method = RequestHttpMethodType.HttpPost,
-                Body = content,
-                Headers = headers,
+                new RequestData()
+                {
+                    RelativeUrl = url,
+                    Method = RequestHttpMethodType.HttpPost,
+                    Body = content,
+                    Headers = headers,
 #pragma warning disable CA5397 // Do not use deprecated SslProtocols values
 #pragma warning disable CS0618 // Type or member is obsolete
-                SslProtocols = SslProtocols.Default
+                    SslProtocols = SslProtocols.Default
 #pragma warning restore CS0618 // Type or member is obsolete
 #pragma warning restore CA5397 // Do not use deprecated SslProtocols values
+                }
             };
         }
 
         /// <inheritdoc/>
-        public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
+        public override ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, string langFrom, string langTo)
         {
-            // string result = response.Content.ReadAsStringAsync().Result;
-            ReversoTranslateResponse result = response.Content.ReadFromJsonAsync<ReversoTranslateResponse>().Result!;
+            // string result = response[0].Content.ReadAsStringAsync().Result;
+            ReversoTranslateResponse result = responses[0].Content.ReadFromJsonAsync<ReversoTranslateResponse>().Result!;
 
             return new ResponseData()
             {

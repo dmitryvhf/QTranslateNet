@@ -64,7 +64,7 @@ namespace GrokAITranslateServiceLibrary
         }
 
         /// <inheritdoc/>
-        public override RequestData ServiceTranslateRequest(string text, string langFrom, string langTo)
+        public override RequestData[] ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             // Get body
             string url = $"/get?q={CommonMethods.EncodeGetParam(text)}&langpair={langFrom}|{langTo}";
@@ -77,18 +77,21 @@ namespace GrokAITranslateServiceLibrary
                 { HeaderNames.Connection, "keep-alive" }
             };
 
-            return new RequestData()
+            return new RequestData[]
             {
-                RelativeUrl = url,
-                Method = RequestHttpMethodType.HttpGet,
-                Headers = requestHeaders
+                new RequestData()
+                {
+                    RelativeUrl = url,
+                    Method = RequestHttpMethodType.HttpGet,
+                    Headers = requestHeaders
+                }
             };
         }
 
         /// <inheritdoc/>
-        public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
+        public override ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, string langFrom, string langTo)
         {
-            GrokResponse? grokResponse = response.Content.ReadFromJsonAsync<GrokResponse>().Result;
+            GrokResponse? grokResponse = responses[0].Content.ReadFromJsonAsync<GrokResponse>().Result;
 
             if (HasApiError(grokResponse))
             {
