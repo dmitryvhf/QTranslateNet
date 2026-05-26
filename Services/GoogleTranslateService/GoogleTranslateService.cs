@@ -41,15 +41,15 @@ namespace GoogleTranslateServiceLibrary
         /// <inheritdoc/>
         protected override Capability[] Capabilities => new Capability[] { Capability.Translate, Capability.DetectLanguage };
 
-        protected override string[] SupportedLanguages
-        {
-            get
-            {
-                return base.SupportedLanguages
-                    .Where(x => x == "en" || x == "ru")
-                    .ToArray();
-            }
-        }
+        //protected override string[] SupportedLanguages
+        //{
+        //    get
+        //    {
+        //        return base.SupportedLanguages
+        //            .Where(x => x == "en" || x == "ru")
+        //            .ToArray();
+        //    }
+        //}
 
         /// <inheritdoc/>
         public override string GetServiceHost(string langFrom, string langTo, string text)

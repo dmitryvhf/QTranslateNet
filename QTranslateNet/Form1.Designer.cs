@@ -51,6 +51,7 @@ namespace QTranslateNet
             // 
             // comboBoxFrom
             // 
+            comboBoxFrom.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxFrom.FormattingEnabled = true;
             comboBoxFrom.Location = new Point(86, 178);
             comboBoxFrom.Name = "comboBoxFrom";
@@ -79,6 +80,7 @@ namespace QTranslateNet
             // 
             // comboBoxTo
             // 
+            comboBoxTo.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxTo.FormattingEnabled = true;
             comboBoxTo.Location = new Point(270, 179);
             comboBoxTo.Name = "comboBoxTo";

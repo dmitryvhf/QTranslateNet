@@ -16,5 +16,13 @@ namespace QTranslateNet.Core.Models
         ///     Полное название языка
         /// </summary>
         public required String Name { get; init; }
+
+        /// <summary>
+        ///     Язык поддерживается
+        /// </summary>
+        /// <remarks>
+        ///     Используется для блокировки в UI
+        /// </remarks>
+        public bool Enabled { get; set; } = true;
     }
 }
