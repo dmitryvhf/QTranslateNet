@@ -8,13 +8,21 @@ namespace QTranslateNet.Core.Models
     public class SupportedLanguage
     {
         /// <summary>
-        ///     Сокращённый код языка
+        ///     Код языка
         /// </summary>
-        public required String Code { get; set; }
+        public required String Code { get; init; }
 
         /// <summary>
         ///     Полное название языка
         /// </summary>
-        public required String Name { get; set; }
+        public required String Name { get; init; }
+
+        /// <summary>
+        ///     Язык поддерживается
+        /// </summary>
+        /// <remarks>
+        ///     Используется для блокировки в UI
+        /// </remarks>
+        public bool Enabled { get; set; } = true;
     }
 }

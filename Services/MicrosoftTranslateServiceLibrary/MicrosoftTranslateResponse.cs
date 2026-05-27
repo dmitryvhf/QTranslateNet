@@ -23,7 +23,7 @@ namespace MicrosoftTranslateServiceLibrary
         public required String To { get; set; }
 
         [JsonPropertyName("Transliteration")]
-        public required MicrosoftTranslateTransliterationResponse Transliteration { get; set; }
+        public MicrosoftTranslateTransliterationResponse? Transliteration { get; set; }
     }
 
     internal sealed class MicrosoftTranslateTransliterationResponse

@@ -38,7 +38,7 @@ namespace LaraTranslateServiceLibrary
         protected override byte[] ServiceIco => LaraTranslateResource.ServiceIco;
 
         /// <inheritdoc/>
-        protected override Сapability[] Сapabilities => new Сapability[] { Сapability.Translate };
+        protected override Capability[] Capabilities => new Capability[] { Capability.Translate };
 
         /// <inheritdoc/>
         public override string GetServiceHost(string langFrom, string langTo, string text)

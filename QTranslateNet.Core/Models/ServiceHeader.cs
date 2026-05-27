@@ -36,7 +36,7 @@ namespace QTranslateNet.Core.Models
         /// <summary>
         ///     Название сервиса перевода
         /// </summary>
-        public required Сapability[] Сapabilities { get; init; }
+        public required Capability[] Capabilities { get; init; }
 
         /// <summary>
         ///     Поддерживаемые языки

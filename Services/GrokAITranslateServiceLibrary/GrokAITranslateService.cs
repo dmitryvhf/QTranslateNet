@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Web;
 
 using Microsoft.Net.Http.Headers;
 
@@ -40,7 +39,7 @@ namespace GrokAITranslateServiceLibrary
         protected override byte[] ServiceIco => GrokAITranslateResource.ServiceIco;
 
         /// <inheritdoc/>
-        protected override Сapability[] Сapabilities => new Сapability[] { Сapability.Translate };
+        protected override Capability[] Capabilities => new Capability[] { Capability.Translate };
 
         /// <inheritdoc/>
         public override string GetServiceHost(string langFrom, string langTo, string text)
@@ -120,7 +119,7 @@ namespace GrokAITranslateServiceLibrary
 
         private static String GetSourceLanguageCode(String langFrom)
         {
-            if (langFrom == MyConstants.AutoDetectLanguageCode)
+            if (langFrom == MyConstants.AutoDetectLanguage.Code)
             {
                 return "autodetect";
             }

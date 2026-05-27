@@ -57,13 +57,15 @@ namespace QTranslateNet
                 return;
             }
 
-            if (String.IsNullOrWhiteSpace(textBoxFrom.Text))
+            if (String.IsNullOrWhiteSpace(textBoxFrom.Text)
+                || comboBoxFrom.SelectedValue == null
+                || comboBoxTo.SelectedValue == null)
             {
                 return;
             }
 
-            string langFrom = comboBoxFrom.SelectedValue!.ToString()!;
-            string langTo = comboBoxTo.SelectedValue!.ToString()!;
+            string langFrom = comboBoxFrom.SelectedValue.ToString()!;
+            string langTo = comboBoxTo.SelectedValue.ToString()!;
             string originalText = textBoxFrom.Text;
 
             TranslateService.Translate(
@@ -117,19 +119,36 @@ namespace QTranslateNet
         {
             string[] serviceLangs = currentTranslateService.GetServiceHeader().SupportedLanguages;
 
-            SupportedLanguage[] supportedLanguages = serviceLangs.Length == 0
-                ? MyConstants.SupportedLanguage
-                : MyConstants.SupportedLanguage
-                    .Where(x => serviceLangs.Contains(x.Code))
-                    .ToArray();
+            SupportedLanguage[] supportedLanguages = MyConstants.SupportedLanguage
+                .ToArray();
+            foreach (SupportedLanguage item in supportedLanguages)
+            {
+                item.Enabled = serviceLangs.Contains(item.Code);
+            }
 
-            comboBoxFrom.DataSource = new BindingSource() { DataSource = supportedLanguages };
+            if (currentTranslateService.GetServiceHeader().Capabilities.Contains(Capability.DetectLanguage))
+            {
+                supportedLanguages = new SupportedLanguage[]
+                {
+                   MyConstants.AutoDetectLanguage
+                }
+                .Concat(supportedLanguages)
+                .ToArray();
+            }
+
             comboBoxFrom.ValueMember = nameof(SupportedLanguage.Code);
             comboBoxFrom.DisplayMember = nameof(SupportedLanguage.Name);
+            comboBoxFrom.DrawMode = DrawMode.OwnerDrawFixed;
+            comboBoxFrom.DrawItem += ComboBox_DrawItem!;
+            comboBoxFrom.SelectedIndexChanged += ComboBox_SelectedIndexChanged!;
+            comboBoxFrom.DataSource = new BindingSource() { DataSource = supportedLanguages };
 
-            comboBoxTo.DataSource = new BindingSource() { DataSource = supportedLanguages };
             comboBoxTo.ValueMember = nameof(SupportedLanguage.Code);
             comboBoxTo.DisplayMember = nameof(SupportedLanguage.Name);
+            comboBoxTo.DrawMode = DrawMode.OwnerDrawFixed;
+            comboBoxTo.DrawItem += ComboBox_DrawItem!;
+            comboBoxTo.SelectedIndexChanged += ComboBox_SelectedIndexChanged!;
+            comboBoxTo.DataSource = new BindingSource() { DataSource = supportedLanguages };
 
             // Temporary realization
             comboBoxFrom.Text = "English";
@@ -197,6 +216,52 @@ namespace QTranslateNet
             };
 
             return control;
+        }
+
+        /// <summary>
+        ///     Событие для отрисовки элемента списка
+        ///     с неподдерживаемым языком перевода
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ComboBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0)
+            {
+                return;
+            }
+
+            ComboBox comboBox = (ComboBox)sender;
+            SupportedLanguage item = (SupportedLanguage)comboBox.Items[e.Index]!;
+            Brush brush = Brushes.Black;
+
+            if (!item.Enabled)
+            {
+                brush = Brushes.Gray;
+            }
+
+            e.DrawBackground();
+            e.Graphics.DrawString(item.Name, e.Font, brush, e.Bounds);
+            e.DrawFocusRectangle();
+        }
+
+        /// <summary>
+        ///     Событие для блокирования выбора неподдерживаемого языка перевода
+        /// </summary>
+        private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+            SupportedLanguage item = (SupportedLanguage)comboBox.SelectedItem!;
+
+            if (comboBox.SelectedIndex != -1 && !item.Enabled)
+            {
+                // Revert to previous selection or clear it
+                comboBox.SelectedItem = comboBox.Tag;
+            }
+            else
+            {
+                comboBox.Tag = item;
+            }
         }
 
         #endregion
