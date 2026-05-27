@@ -133,7 +133,7 @@ namespace MicrosoftTranslateServiceLibrary
         }
 
         /// <inheritdoc/>
-        public override RequestData ServiceTranslateRequest(string text, string langFrom, string langTo)
+        public override RequestData[] ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             if (String.IsNullOrWhiteSpace(OptionsIG)
                 || String.IsNullOrWhiteSpace(OptionsBingToken)
@@ -168,19 +168,22 @@ namespace MicrosoftTranslateServiceLibrary
             requestHeaders.Add(HeaderNames.XRequestedWith, "XMLHttpRequest");
             requestHeaders.Add(HeaderNames.Connection, "keep-alive");
 
-            return new RequestData()
+            return new RequestData[]
             {
+                new RequestData()
+                {
                 RelativeUrl = url,
                 Method = RequestHttpMethodType.HttpPost,
                 Body = content,
                 Headers = requestHeaders
+                }
             };
         }
 
         /// <inheritdoc/>
-        public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
+        public override ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, string langFrom, string langTo)
         {
-            string result = response.Content.ReadAsStringAsync().Result;
+            string result = responses[0].Content.ReadAsStringAsync().Result;
             if (result.Contains("\"statusCode\""))
             {
                 // {"statusCode":205,"errorMessage":""}
@@ -192,7 +195,7 @@ namespace MicrosoftTranslateServiceLibrary
                 };
             }
 
-            MicrosoftTranslateResponse[] microsoftResponse = response.Content.ReadFromJsonAsync<MicrosoftTranslateResponse[]>().Result!;
+            MicrosoftTranslateResponse[] microsoftResponse = responses[0].Content.ReadFromJsonAsync<MicrosoftTranslateResponse[]>().Result!;
             if (microsoftResponse.Length == 0)
             {
                 return new ResponseData()

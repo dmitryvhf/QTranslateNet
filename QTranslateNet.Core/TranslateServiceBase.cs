@@ -118,10 +118,10 @@ namespace QTranslateNet.Core
         #region Перевод текста
 
         /// <inheritdoc />
-        public abstract RequestData ServiceTranslateRequest(String text, String langFrom, String langTo);
+        public abstract RequestData[] ServiceTranslateRequest(String text, String langFrom, String langTo);
 
         /// <inheritdoc />
-        public abstract ResponseData ServiceTranslateResponse(HttpResponseMessage response, String langFrom, String langTo);
+        public abstract ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, String langFrom, String langTo);
 
         #endregion
 

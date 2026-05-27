@@ -64,21 +64,24 @@ namespace GoogleTranslateServiceLibrary
         }
 
         /// <inheritdoc/>
-        public override RequestData ServiceTranslateRequest(string text, string langFrom, string langTo)
+        public override RequestData[] ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             string url = $"/translate_a/single?client=gtx&sl={langFrom}&tl={langTo}&dt=t&q={CommonMethods.EncodeGetParam(text)}";
 
-            return new RequestData()
+            return new RequestData[]
             {
-                RelativeUrl = url,
-                Method = RequestHttpMethodType.HttpGet
+                new RequestData()
+                {
+                    RelativeUrl = url,
+                    Method = RequestHttpMethodType.HttpGet
+                }
             };
         }
 
         /// <inheritdoc/>
-        public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
+        public override ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, string langFrom, string langTo)
         {
-            string result = response.Content.ReadAsStringAsync().Result;
+            string result = responses[0].Content.ReadAsStringAsync().Result;
 
             // todo json parse?
             result = result.Substring(4, result.IndexOf('"', 4) - 4);

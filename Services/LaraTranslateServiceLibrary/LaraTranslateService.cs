@@ -56,7 +56,7 @@ namespace LaraTranslateServiceLibrary
         }
 
         /// <inheritdoc/>
-        public override RequestData ServiceTranslateRequest(string text, string langFrom, string langTo)
+        public override RequestData[] ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             // Get body
             String requestText = CommonMethods.EncodeGetParam(text);
@@ -80,19 +80,22 @@ namespace LaraTranslateServiceLibrary
                 { HeaderNames.Referer, "https://laratranslate.com" }
             };
 
-            return new RequestData()
+            return new RequestData[]
             {
-                RelativeUrl = relativeUrl,
-                Method = RequestHttpMethodType.HttpPost,
-                Body = content,
-                Headers = headers
+                new RequestData()
+                {
+                    RelativeUrl = relativeUrl,
+                    Method = RequestHttpMethodType.HttpPost,
+                    Body = content,
+                    Headers = headers
+                }
             };
         }
 
         /// <inheritdoc/>
-        public override ResponseData ServiceTranslateResponse(HttpResponseMessage response, string langFrom, string langTo)
+        public override ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, string langFrom, string langTo)
         {
-            LaraResponse laraResponse = response.Content.ReadFromJsonAsync<LaraResponse>().Result!;
+            LaraResponse laraResponse = responses[0].Content.ReadFromJsonAsync<LaraResponse>().Result!;
 
             if (laraResponse.Status != 200)
             {
