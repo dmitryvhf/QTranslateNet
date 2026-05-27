@@ -148,7 +148,7 @@ namespace QTranslateNet
 
             HttpClient httpClient = new HttpClient(handler)
             {
-                Timeout = TimeSpan.FromSeconds(MyConstants.TimeoutSeconds),
+                // Timeout = TimeSpan.FromSeconds(MyConstants.TimeoutSeconds),
                 BaseAddress = new Uri(baseAddress),
             };
 
