@@ -121,9 +121,12 @@ namespace QTranslateNet.Core
         ///     Разбор ответа метода автоопределения языка
         ///     методом <see cref="ServiceDetectLanguageRequest"/>
         /// </summary>
-        /// <param name="responseText">Данные ответа от сервиса</param>
-        /// <returns>Модель данных ответа</returns>
-        ResponseData ServiceDetectLanguageResponse(HttpResponseMessage responseText);
+        /// <param name="response">Данные ответа от запроса автоопределения языка исходного текста</param>
+        /// <returns>
+        ///     Короткий код автоопределённого языка.
+        ///     Если пустое значение - значит язык не был определён.
+        /// </returns>
+        String ServiceDetectLanguageResponse(HttpResponseMessage response);
 
         #endregion
 

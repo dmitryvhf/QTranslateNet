@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json.Nodes;
 
 using QTranslateNet.Core;
 using QTranslateNet.Core.Helpers;
@@ -64,6 +67,60 @@ namespace GoogleTranslateServiceLibrary
         }
 
         /// <inheritdoc/>
+        public override RequestData ServiceDetectLanguageRequest(string text)
+        {
+            string preparedText = CommonMethods.LimitSource(CommonMethods.PrepareSource(text)).Trim();
+            // ttk()
+            preparedText = CommonMethods.EncodeGetParam(preparedText);
+
+            RequestHttpMethodType selectedMethods =
+                preparedText.Length > MyConstants.MaxUriLen ? RequestHttpMethodType.HttpPost : RequestHttpMethodType.HttpGet;
+
+            string url = $"/translate_a/single?client=gtx&sl=auto&dt=ld&ie=UTF-8&oe=UTF-8";
+            // tk=...
+
+            HttpContent? postBody = null;
+            if (selectedMethods == RequestHttpMethodType.HttpGet)
+            {
+                url += url + "&q=" + preparedText;
+            }
+            else if (selectedMethods == RequestHttpMethodType.HttpPost)
+            {
+                HttpContent content = new FormUrlEncodedContent(
+                    new Dictionary<string, string>
+                    {
+                        ["q"] = preparedText
+                    });
+
+                postBody = content;
+            }
+            else
+            {
+                throw new UnreachableException();
+            }
+
+            return new RequestData()
+            {
+                RelativeUrl = url,
+                Method = selectedMethods,
+                Body = postBody
+            };
+        }
+
+        /// <inheritdoc/>
+        public override String ServiceDetectLanguageResponse(HttpResponseMessage response)
+        {
+            string json = response.Content.ReadAsStringAsync().Result;
+
+            JsonNode? node = JsonNode.Parse(json);
+            string? result = node?[8]?[0]?[0]?.GetValue<string>();
+
+            result ??= "en";
+
+            return result;
+        }
+
+        /// <inheritdoc/>
         public override RequestData[] ServiceTranslateRequest(string text, string langFrom, string langTo)
         {
             string url = $"/translate_a/single?client=gtx&sl={langFrom}&tl={langTo}&dt=t&q={CommonMethods.EncodeGetParam(text)}";
@@ -81,10 +138,12 @@ namespace GoogleTranslateServiceLibrary
         /// <inheritdoc/>
         public override ResponseData ServiceTranslateResponse(HttpResponseMessage[] responses, string langFrom, string langTo)
         {
-            string result = responses[0].Content.ReadAsStringAsync().Result;
+            string json = responses[0].Content.ReadAsStringAsync().Result;
 
-            // todo json parse?
-            result = result.Substring(4, result.IndexOf('"', 4) - 4);
+            JsonNode? node = JsonNode.Parse(json);
+            string? result = node?[0]?[0]?[0]?.GetValue<string>();
+
+            result ??= MyConstants.NoDataReturnedMessage;
 
             return new ResponseData()
             {

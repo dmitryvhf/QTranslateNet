@@ -112,7 +112,7 @@ namespace ReversoTranslateServiceLibrary
 
             return new ResponseData()
             {
-                Text = result.Translation.FirstOrDefault() ?? "[No data returned]",
+                Text = result.Translation.FirstOrDefault() ?? MyConstants.NoDataReturnedMessage,
                 From = langFrom,
                 To = langTo
             };

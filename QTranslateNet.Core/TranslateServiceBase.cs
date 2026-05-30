@@ -134,7 +134,7 @@ namespace QTranslateNet.Core
         }
 
         /// <inheritdoc />
-        public virtual ResponseData ServiceDetectLanguageResponse(HttpResponseMessage responseText)
+        public virtual String ServiceDetectLanguageResponse(HttpResponseMessage response)
         {
             throw new NotImplementedException();
         }

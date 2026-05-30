@@ -189,7 +189,7 @@ namespace MicrosoftTranslateServiceLibrary
                 // {"statusCode":205,"errorMessage":""}
                 return new ResponseData()
                 {
-                    Text = "[No data returned]",
+                    Text = MyConstants.NoDataReturnedMessage,
                     From = langFrom,
                     To = langTo
                 };
@@ -200,7 +200,7 @@ namespace MicrosoftTranslateServiceLibrary
             {
                 return new ResponseData()
                 {
-                    Text = "[No data returned]",
+                    Text = MyConstants.NoDataReturnedMessage,
                     From = langFrom,
                     To = langTo
                 };

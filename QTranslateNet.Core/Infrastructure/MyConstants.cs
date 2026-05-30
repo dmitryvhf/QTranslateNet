@@ -43,13 +43,18 @@ namespace QTranslateNet.Core.Infrastructure
         /// <summary>
         ///     Тип выбранного языка: неизвестный или неподдерживаемый
         /// </summary>
-        public const String UnknownLanguageCode = "-1";
+        public const String UnknownLanguageCode = "";
 
         /// <summary>
         ///     Тип выбранного языка: автоперевод
         /// </summary>
         public static readonly SupportedLanguage AutoDetectLanguage =
             new SupportedLanguage() { Code = "auto", Name = "Auto-Detect" };
+
+        /// <summary>
+        ///     Сообщение в результат при ошибке получения корректных данных от сервиса
+        /// </summary>
+        public static readonly String NoDataReturnedMessage = "[No data returned]";
 
         #endregion
 

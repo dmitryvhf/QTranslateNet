@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Microsoft.Net.Http.Headers;
 
 using QTranslateNet.Core;
+using QTranslateNet.Core.Helpers;
 using QTranslateNet.Core.Infrastructure;
 using QTranslateNet.Core.Models;
 
@@ -75,6 +76,28 @@ namespace QTranslateNet
 
             #endregion
 
+            #region Autodetect language
+
+            if (langFrom == MyConstants.AutoDetectLanguage.Code
+                && currentTranslateService.GetServiceHeader().Capabilities.Contains(Capability.DetectLanguage))
+            {
+                RequestData autodetectRequest = currentTranslateService.ServiceDetectLanguageRequest(originalText);
+
+                statusLabelControl.Text = "Autodetect language...";
+                resultTextBoxControl.Text = String.Empty;
+
+                HttpResponseMessage translateResponse = ServiceRequest(autodetectRequest, baseAddress, statusLabelControl);
+
+                String autoDetectLanguageResult = currentTranslateService.ServiceDetectLanguageResponse(translateResponse);
+
+                if (!String.IsNullOrWhiteSpace(autoDetectLanguageResult))
+                {
+                    langFrom = autoDetectLanguageResult;
+                }
+            }
+
+            #endregion
+
             #region Translate request
 
             // Get request model
@@ -117,13 +140,14 @@ namespace QTranslateNet
 
             // Step: output result
             resultTextBoxControl.Text = translateResponseData.Text;
-            statusLabelControl.Text = String.Empty;
+            statusLabelControl.Text =
+                $"{currentTranslateService.GetServiceHeader().Name} > {CommonMethods.LanguageFromCode(langFrom)} to {CommonMethods.LanguageFromCode(langTo)}";
 
             #endregion
         }
 
         /// <summary>
-        ///     Выполнить перевод с указанными настройками
+        ///     Отправить API запрос с указанными настройками
         /// </summary>
         /// <param name="request">Модель запроса</param>
         /// <param name="baseAddress">Базовый адрес сервиса</param>

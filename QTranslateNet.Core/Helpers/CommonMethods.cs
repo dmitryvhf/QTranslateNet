@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Web;
 
@@ -103,15 +104,19 @@ limitSource(text, maxLen)           // Обрезка текста под лим
               ? SupportedLanguages[a]
               : UNKNOWN_LANGUAGE_CODE;
         }
-        function languageFromCode(a)
-        {
-            if (SupportedLanguages[ENGLISH_LANGUAGE] === a) return ENGLISH_LANGUAGE;
-            for (var b = AUTO_DETECT_LANGUAGE; b < SupportedLanguages.length; b++)
-                if (SupportedLanguages[b] === a) return b;
-            return UNKNOWN_LANGUAGE;
-        }
-        */
 
+         */
+
+        /// <summary>
+        ///     Возвращает полное название языка
+        /// </summary>
+        /// <param name="langCode">Короткий код языка</param>
+        /// <returns>Полное название языка</returns>
+        public static String? LanguageFromCode(String langCode)
+        {
+            return MyConstants.SupportedLanguage
+                .FirstOrDefault(x => x.Code == langCode)?.Name ?? MyConstants.UnknownLanguageCode;
+        }
 
         // Кодирование и парсинг
 
